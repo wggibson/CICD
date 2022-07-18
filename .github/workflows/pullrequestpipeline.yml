@@ -80,8 +80,8 @@ jobs:
           # Default: false
           autoUpgradeBaseApp: false
         env:
-          nowUsername: ${{ secrets.SN_USERNAME }}
-          nowPassword: ${{ secrets.SN_PASSWORD }}
+          nowUsername: ${{ secrets.NOW_USERNAME }}
+          nowPassword: ${{ secrets.NOW_PASSWORD }}
           nowInstallInstance: ${{ secrets.SN_TEST_INSTANCE }}
           appSysID: ${{ secrets.SN_APP_SYSID }}
 
@@ -90,8 +90,8 @@ jobs:
         with:
           testSuiteSysId: ${{ secrets.SN_ATFTESTSUITE_SYSID }}
         env:
-          nowUsername: ${{ secrets.SN_USERNAME }}
-          nowPassword: ${{ secrets.SN_PASSWORD }}
+          nowUsername: ${{ secrets.NOW_USERNAME }}
+          nowPassword: ${{ secrets.NOW_PASSWORD }}
           nowInstallInstance: ${{ secrets.SN_TEST_INSTANCE }}
 
       - name: ServiceNow CI/CD Rollback App
@@ -100,8 +100,8 @@ jobs:
         with:
           version: ${{steps.install_app.outputs.rollbackVersion}}
         env:
-          nowUsername: ${{ secrets.SN_USERNAME }}
-          nowPassword: ${{ secrets.SN_PASSWORD }}
+          nowUsername: ${{ secrets.NOW_USERNAME }}
+          nowPassword: ${{ secrets.NOW_PASSWORD }}
           nowInstallInstance: ${{ secrets.SN_TEST_INSTANCE }}
           appSysID: ${{ secrets.SN_APP_SYSID }}
 
@@ -136,8 +136,8 @@ jobs:
           # Default: false
 #          autoUpgradeBaseApp: true
         env:
-          nowUsername: ${{ secrets.SN_USERNAME }}
-          nowPassword: ${{ secrets.SN_PASSWORD }}
+          nowUsername: ${{ secrets.NOW_USERNAME }}
+          nowPassword: ${{ secrets.NOW_PASSWORD }}
           nowInstallInstance: ${{ secrets.SN_PROD_INSTANCE }}
           appSysID: ${{ secrets.SN_APP_SYSID }}
   build:
