@@ -88,7 +88,7 @@ jobs:
       - name: ServiceNow CI/CD Run ATF Test Suite
         uses: ServiceNow/sncicd-tests-run@2.0.0
         with:
-          testSuiteSysId: ${{ secrets.SN_ATFTESTSUITE_SYSID }}
+          testSuiteSysId: ${{ secrets.TEST_SUITE_ID }}
         env:
           nowUsername: ${{ secrets.NOW_USERNAME }}
           nowPassword: ${{ secrets.NOW_PASSWORD }}
