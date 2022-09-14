@@ -17,7 +17,7 @@ Feature_04321.prototype = {
 	},
 	
 	sayGoodBy: function() {
-		return "Good by ";
+		return "Good by Gene ";
 	},
 
     type: 'Feature_04321'
@@ -26,13 +26,13 @@ Feature_04321.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-07-18 10:31:42</sys_created_on>
         <sys_id>d43fbd4d97301110059ab4b3f153af67</sys_id>
-        <sys_mod_count>6</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>Feature_04321</sys_name>
         <sys_package display_value="CICD DemoApp" source="x_739109_cicd_demo">73146993975b4110059ab4b3f153afae</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="CICD DemoApp">73146993975b4110059ab4b3f153afae</sys_scope>
         <sys_update_name>sys_script_include_d43fbd4d97301110059ab4b3f153af67</sys_update_name>
         <sys_updated_by>eugene.sikorski</sys_updated_by>
-        <sys_updated_on>2022-09-11 14:29:27</sys_updated_on>
+        <sys_updated_on>2022-09-14 19:40:22</sys_updated_on>
     </sys_script_include>
 </record_update>
