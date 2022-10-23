@@ -24,12 +24,13 @@ pipeline {
       
     }
     stage('Test') {
-      when {
+      /*when {
         not {
           branch 'master'
         }
-      }
+      }*/
       steps {
+        echo "${DEVENV}"
         snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
         snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
       }
