@@ -6,7 +6,7 @@ pipeline {
     CREDENTIALS = 'a199ebb1-14fa-4b09-af87-002e1420349a'
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
-    /* PRODENV = 'https://prodinstance.service-now.com/' */
+    /* PRODENV = 'https://prodinstance.service-now.com/' **/
     TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
   stages {
