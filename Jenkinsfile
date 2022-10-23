@@ -1,13 +1,13 @@
 pipeline {
   agent any
   environment {
-    APPSYSID = '00f35c601b2b9410fe0165f8bc4bcb06'
+    APPSYSID = '73146993975b4110059ab4b3f153afae'
     BRANCH = "${BRANCH_NAME}"
     CREDENTIALS = 'a199ebb1-14fa-4b09-af87-002e1420349a'
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
-    PRODENV = 'https://prodinstance.service-now.com/'
-    TESTSUITEID = 'b1ae55eedb541410874fccd8139619fb'
+    /* PRODENV = 'https://prodinstance.service-now.com/' */
+    TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
   stages {
     stage('Build') {
@@ -32,13 +32,13 @@ pipeline {
         snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
       }
     }
-    stage('Deploy to Prod') {
+    /*stage('Deploy to Prod') {
       when {
         branch 'master'
       }
       steps {
         snInstallApp(credentialsId: "${CREDENTIALS}", url: "${PRODENV}", appSysId: "${APPSYSID}")
       }
-    }
+    }*/
   }
 }
