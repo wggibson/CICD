@@ -10,6 +10,12 @@ pipeline {
     TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
   stages {
+    stage('Validated User Name') {
+      steps {
+        echo "${CREDENTIALS}"      
+      }
+    }
+    
     stage('Build') {
       /*when {
         not {
