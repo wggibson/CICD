@@ -13,8 +13,8 @@ pipeline {
   stages {
     stage('Validated User Name') {
       steps {
-        //echo "${NOW_CREDENTIALS}"
-        sh('echo ${NOW_CREDENTIALS}')
+        echo "${NOW_CREDENTIALS}"
+        //sh('echo ${NOW_CREDENTIALS}')
       }
     }
     
