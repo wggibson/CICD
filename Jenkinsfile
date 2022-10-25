@@ -13,8 +13,8 @@ pipeline {
   stages {
     stage('Validated User Name') {
       steps {
-        echo "${NOW_CREDENTIALS}"
-        //sh('echo ${NOW_CREDENTIALS}')
+        //echo "${NOW_CREDENTIALS}"
+        sh "echo 'My Credentials are $NOW_CREDENTIALS'"
       }
     }
     
@@ -28,7 +28,7 @@ pipeline {
         echo "${DEVENV}"
         //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", obtainVersionAutomatically: true, url: "${DEVENV}")
-        snRunTestSuite(credentialsId: "${NOW_CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
+       // snRunTestSuite(credentialsId: "${NOW_CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
       
