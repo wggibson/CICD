@@ -12,7 +12,7 @@ pipeline {
   stages {
     stage('Validated User Name') {
       steps {
-        echo $CREDENTIALS      
+        echo "${CREDENTIALS}"
       }
     }
     
