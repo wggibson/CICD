@@ -14,7 +14,7 @@ pipeline {
     stage('Validated User Name') {
       steps {
         //echo "${NOW_CREDENTIALS}"
-        sh "echo 'My Credentials are $NOW_CREDENTIALS'"
+        sh "echo 'My Credentials are ${NOW_CREDENTIALS}'"
       }
     }
     
