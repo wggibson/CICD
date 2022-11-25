@@ -8,7 +8,7 @@ pipeline {
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
     /* PRODENV = 'https://prodinstance.service-now.com/' **/
-    TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
+    TESTSUITEID = 'cb84d4ee645320107f44ee76849dd2e5'
   }
   stages {
     stage('Validated User Name') {
