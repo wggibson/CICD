@@ -3,7 +3,8 @@ pipeline {
   environment {
     APPSYSID = '73146993975b4110059ab4b3f153afae'
     BRANCH = "${BRANCH_NAME}"
-    CREDENTIALS = '268e2e76-d3b1-4032-a9a1-79955fa9b5b6'
+    DEV_CREDENTIALS = '0a730426-f963-408f-9c8b-6d3bdbc1bbe3'
+    TEST_CREDENTIALS = '268e2e76-d3b1-4032-a9a1-79955fa9b5b6'
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
     /* PRODENV = 'https://prodinstance.service-now.com/' **/
@@ -25,9 +26,9 @@ pipeline {
       }*/
       steps {
         echo "${TESTENV}"
-        //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
+        snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", obtainVersionAutomatically: true, url: "${DEVENV}")
-        snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
+        //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
       
@@ -40,8 +41,8 @@ pipeline {
       }*/
       steps {
         echo "${TESTENV}"
-        /*snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
-        snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)*/
+        snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
+        snRunTestSuite(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
       }
     }
     /*stage('Deploy to Prod') {
