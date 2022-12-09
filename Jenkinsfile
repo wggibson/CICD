@@ -8,7 +8,7 @@ pipeline {
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
     /* PRODENV = 'https://prodinstance.service-now.com/' **/
-    TESTSUITEID = 'd22ea123976b1110ba0d7e121153afb4'
+    TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
   stages {
     stage('Validated User Name') {
@@ -33,19 +33,19 @@ pipeline {
       }
       
     }
-    stage('Test') {
+    //stage('Test') {
       /*when {
         not {
           branch 'master'
         }
       }*/
-      steps {
+      /*steps {
         echo "${TESTENV}"
         snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
         snRunTestSuite(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
-      }
-    }
+      }*/
+    //}
     /*stage('Deploy to Prod') {
       when {
         branch 'master'
