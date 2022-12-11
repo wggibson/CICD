@@ -4,6 +4,7 @@ pipeline {
     APPSYSID = '73146993975b4110059ab4b3f153afae'
     BRANCH = "${BRANCH_NAME}"
     CREDENTIALS = '0a730426-f963-408f-9c8b-6d3bdbc1bbe3'
+    DEV_CREDENTIALS = '0a730426-f963-408f-9c8b-6d3bdbc1bbe3'
     TEST_CREDENTIALS = '268e2e76-d3b1-4032-a9a1-79955fa9b5b6'
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
