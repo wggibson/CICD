@@ -25,9 +25,16 @@ pipeline {
           branch 'master'
         }
       }*/
+      environment {
+           My_User_Credentials = credentials('0a730426-f963-408f-9c8b-6d3bdbc1bbe3')
+         }
       steps {
         echo "${DEVENV}"
-        echo "My Credentials are $CREDENTIALS"
+        //echo "My Credentials are $CREDENTIALS"
+        
+        echo "My username is $My_User_Credentials_USR"
+        echo "My password is $My_User_Credentials_PSW"
+
         //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
         //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
