@@ -14,9 +14,9 @@ pipeline {
     TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
   
-  parameters {
-    snParam(credentialsForPublishedApp: "${CREDENTIALS}", instanceForPublishedAppUrl: "${DEVENV}", sysId: "${APPSYSID}", appScope: "x_739109_cicd_demo", publishedAppVersion: "1.0.7")
-  }
+  //parameters {
+    //snParam(credentialsForPublishedApp: "${CREDENTIALS}", instanceForPublishedAppUrl: "${DEVENV}", sysId: "${APPSYSID}", appScope: "x_739109_cicd_demo", publishedAppVersion: "1.0.7")
+  //}
   stages {
     stage('Validated User Name') {
       steps {
@@ -39,7 +39,7 @@ pipeline {
         script {
           gitTag=sh(returnStdout: true, script: "git tag --contains | head -1").trim()
         }
-        echo "${params.snParam}" // for debugging
+        echo "${gitTag}" // for debugging
         
         snApplyChanges()
 
