@@ -31,17 +31,17 @@ pipeline {
         echo "${BRANCH}"    
         
         // run your build scripts
-       // checkout scm
-        //sh 'npm --version'
+        checkout scm
+        sh 'npm --version'
         //sh 'npm install'
         //sh 'grunt dev-setup --no-color'
         
-        script {
-          gitTag=sh(returnStdout: true, script: "git tag --contains | head -1").trim()
-        }
-        echo "${gitTag}" // for debugging
+       // script {
+          //gitTag=sh(returnStdout: true, script: "git tag --contains | head -1").trim()
+        //}
+        //echo "${gitTag}" // for debugging
         
-        snApplyChanges()
+        //snApplyChanges()
 
         //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
@@ -56,15 +56,15 @@ pipeline {
           branch 'master'
         }
       }*/
-      when {
+      /*when {
         expression {
           return gitTag;
         }
-      }
+      }*/
       steps {
         echo "Installing on ${TESTENV}"
 
-        snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
+        //snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
         //snRunTestSuite(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
