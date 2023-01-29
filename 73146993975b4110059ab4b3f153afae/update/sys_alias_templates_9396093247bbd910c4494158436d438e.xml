@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_alias_templates">
+    <sys_alias_templates action="INSERT_OR_UPDATE">
+        <default_data_template>{&#13;
+	"credential": {&#13;
+		"user_name": "&lt;user-name&gt;",&#13;
+        "password": "&lt;password&gt;",&#13;
+		"name": "&lt;provider-name&gt; Spoke Credential",&#13;
+		"table": "basic_auth_credentials"&#13;
+	},&#13;
+	"connection": {&#13;
+		"connection_url": "",&#13;
+		"name": "",&#13;
+		"table": "http_connection"&#13;
+	}&#13;
+}</default_data_template>
+        <dynamic_data_schema>{&#13;
+  "connection_fields": [{&#13;
+	"name": "connection.name",&#13;
+	"label": "Connection Name",&#13;
+	"type": "text",&#13;
+	"defaultValue": "&lt;provider-name&gt; Spoke Connection",&#13;
+	"hint": "Display name for the Connection", &#13;
+        "mandatory":true&#13;
+    }, &#13;
+    {&#13;
+      "name": "connection.connection_url",&#13;
+      "label": "Connection URL",&#13;
+      "type": "text",&#13;
+      "defaultValue": "https://&lt;provider-domain-name&gt;.com",&#13;
+      "hint": "Connection URL for provider", &#13;
+        "mandatory":true&#13;
+    }&#13;
+  ], "credential_fields": [&#13;
+    {&#13;
+      "name": "credential.user_name",&#13;
+      "label": "User Name",&#13;
+      "type": "text",&#13;
+      "defaultValue": "",&#13;
+      "hint": "Username for outbound authentication", &#13;
+        "mandatory":true&#13;
+    }, &#13;
+    {&#13;
+      "name": "credential.password",&#13;
+      "label": "Password",&#13;
+      "type": "password",&#13;
+      "defaultValue": "",&#13;
+      "hint": "Password for outbound authentication", &#13;
+        "mandatory":true&#13;
+    }&#13;
+  ]&#13;
+}</dynamic_data_schema>
+        <name>wggibson OAUTH</name>
+        <on_edit_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
+   // aliasId: sys_id of the alias record
+   // connectionSysId: sys_id of the connection record created by using the default and dynamic data
+   // jsonDefaultData (String): The default JSON template data from template table
+   // e.g. var jsonDefaultParsed = JSON.parse(jsonDefaultData);
+   //      gs.info("default connection url = " + jsonDefaultParsed["connection"]["connection_url"]);
+   // jsonDynamicData (String): User input based on the key/values defined in "Dynamic Data"
+   // e.g. var jsonDynamicParsed = JSON.parse(jsonDynamicData);
+   //      gs.info("dynamic connection url = " + jsonDynamicParsed["connection.connection_url"]);
+})(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
+]]></on_edit_script>
+        <post_process_script><![CDATA[(function execute(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData) {
+   // aliasId: sys_id of the alias record
+   // connectionSysId: sys_id of the connection record created by using the default and dynamic data
+   // jsonDefaultData (String): The default JSON template data from template table
+   // e.g. var jsonDefaultParsed = JSON.parse(jsonDefaultData);
+   //      gs.info("default connection url = " + jsonDefaultParsed["connection"]["connection_url"]);
+   // jsonDynamicData (String): User input based on the key/values defined in "Dynamic Data"
+   // e.g. var jsonDynamicParsed = JSON.parse(jsonDynamicData);
+   //      gs.info("dynamic connection url = " + jsonDynamicParsed["connection.connection_url"]);
+})(aliasId, connectionSysId, jsonDefaultData, jsonDynamicData);
+]]></post_process_script>
+        <sys_class_name>sys_alias_templates</sys_class_name>
+        <sys_created_by>eugene.sikorski</sys_created_by>
+        <sys_created_on>2022-12-19 20:02:11</sys_created_on>
+        <sys_id>9396093247bbd910c4494158436d438e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>wggibson OAUTH</sys_name>
+        <sys_package display_value="CICD DemoApp" source="x_739109_cicd_demo">73146993975b4110059ab4b3f153afae</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CICD DemoApp">73146993975b4110059ab4b3f153afae</sys_scope>
+        <sys_update_name>sys_alias_templates_9396093247bbd910c4494158436d438e</sys_update_name>
+        <sys_updated_by>eugene.sikorski</sys_updated_by>
+        <sys_updated_on>2022-12-19 20:02:11</sys_updated_on>
+    </sys_alias_templates>
+</record_update>
