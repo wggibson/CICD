@@ -25,17 +25,12 @@ pipeline {
           branch 'master'
         }
       }*/
-      environment {
-           My_User_Credentials = credentials('0a730426-f963-408f-9c8b-6d3bdbc1bbe3')
-         }
+
       steps {
         echo "${DEVENV}"
-        //echo "My Credentials are $CREDENTIALS"
-        
-        echo "My username is $My_User_Credentials_USR"
-        echo "My password is $My_User_Credentials_PSW"
+        echo "${BRANCH}"
 
-        //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
+        snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
         //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
@@ -49,20 +44,21 @@ pipeline {
         }
       }*/
       steps {
-        echo "${TESTENV}"
-        echo "My Credentials are $TEST_CREDENTIALS"
-        //snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
+        echo "Installing on ${TESTENV}"
+
+        snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
         //snRunTestSuite(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
     }
-    /*stage('Deploy to Prod') {
-      when {
+    stage('Deploy to Prod') {
+      echo "########### Ready to deploy to PROD ###########"
+      /*when {
         branch 'master'
       }
       steps {
         snInstallApp(credentialsId: "${CREDENTIALS}", url: "${PRODENV}", appSysId: "${APPSYSID}")
-      }
-    }*/
+      }*/
+    }
   }
 }
