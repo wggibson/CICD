@@ -1,3 +1,5 @@
+def gitTag = null
+
 pipeline {
   agent any
   environment {
@@ -11,6 +13,10 @@ pipeline {
     /* PRODENV = 'https://prodinstance.service-now.com/' **/
     TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
+  
+  parameters {
+    snParam(credentialsForPublishedApp: "${CREDENTIALS}", instanceForPublishedAppUrl: "${DEVENV}", sysId: "${APPSYSID}", appScope: "x_739109_cicd_demo", publishedAppVersion: "1.0.7")
+  }
   stages {
     stage('Validated User Name') {
       steps {
@@ -19,18 +25,25 @@ pipeline {
       }
     }
     
-    stage('Build') {
-      /*when {
-        not {
-          branch 'master'
-        }
-      }*/
-
+    stage('Buil Preparation') {
       steps {
         echo "${DEVENV}"
-        echo "${BRANCH}"
+        echo "${BRANCH}"    
+        
+        // run your build scripts
+       // checkout scm
+        //sh 'npm --version'
+        //sh 'npm install'
+        //sh 'grunt dev-setup --no-color'
+        
+        script {
+          gitTag=sh(returnStdout: true, script: "git tag --contains | head -1").trim()
+        }
+        echo "${params.snParam}" // for debugging
+        
+        snApplyChanges()
 
-        snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
+        //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
         //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
@@ -43,6 +56,11 @@ pipeline {
           branch 'master'
         }
       }*/
+      when {
+        expression {
+          return gitTag;
+        }
+      }
       steps {
         echo "Installing on ${TESTENV}"
 
