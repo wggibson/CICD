@@ -52,13 +52,13 @@ pipeline {
       }
     }
     stage('Deploy to Prod') {
-      echo "########### Ready to deploy to PROD ###########"
       /*when {
         branch 'master'
-      }
-      steps {
-        snInstallApp(credentialsId: "${CREDENTIALS}", url: "${PRODENV}", appSysId: "${APPSYSID}")
       }*/
+      steps {
+        echo "########### Ready to deploy to PROD ###########"
+        //snInstallApp(credentialsId: "${CREDENTIALS}", url: "${PRODENV}", appSysId: "${APPSYSID}")
+      }
     }
   }
 }
