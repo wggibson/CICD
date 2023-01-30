@@ -14,9 +14,6 @@ pipeline {
     TESTSUITEID = 'd23d977097315510ba0d7e121153afd7'
   }
   
-  //parameters {
-    //snParam(credentialsForPublishedApp: "${CREDENTIALS}", instanceForPublishedAppUrl: "${DEVENV}", sysId: "${APPSYSID}", appScope: "x_739109_cicd_demo", publishedAppVersion: "1.0.7")
-  //}
   stages {
     stage('Validated User Name') {
       steps {
@@ -37,8 +34,8 @@ pipeline {
         
         //snApplyChanges()
 
-        //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
-        //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
+        snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
+        snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
         //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
