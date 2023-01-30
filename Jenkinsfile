@@ -30,12 +30,6 @@ pipeline {
         echo "${DEVENV}"
         echo "${BRANCH}"    
         
-        // run your build scripts
-        //checkout scm
-        sh 'npm --version'
-        sh 'npm install'
-        sh 'grunt dev-setup --no-color'
-        
        // script {
           //gitTag=sh(returnStdout: true, script: "git tag --contains | head -1").trim()
         //}
