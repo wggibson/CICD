@@ -31,7 +31,7 @@ pipeline {
         echo "${BRANCH}"    
         
         // run your build scripts
-        checkout scm
+        //checkout scm
         sh 'npm --version'
         sh 'npm install'
         sh 'grunt dev-setup --no-color'
