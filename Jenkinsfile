@@ -5,7 +5,7 @@ pipeline {
   environment {
     APPSYSID = '73146993975b4110059ab4b3f153afae'
     BRANCH = "${BRANCH_NAME}"
-    CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
+    CREDENTIALS = 'SN_CREDS'
     DEV_CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
     TEST_CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
     DEVENV = 'https://dev121898.service-now.com/'
@@ -25,16 +25,9 @@ pipeline {
     stage('Build Preparation') {
       steps {
         echo "${DEVENV}"
-        echo "${BRANCH}"    
-        
-       // script {
-          //gitTag=sh(returnStdout: true, script: "git tag --contains | head -1").trim()
-        //}
-        //echo "${gitTag}" // for debugging
-        
-        //snApplyChanges()
+        echo "${BRANCH}"
 
-        snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${DEV_CREDENTIALS}")
+        snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
         //snPublishApp(credentialsId: "${CREDENTIALS}", appSysId: "${APPSYSID}", isAppCustomization: true, obtainVersionAutomatically: true, url: "${DEVENV}")
         //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
@@ -47,15 +40,11 @@ pipeline {
           branch 'master'
         }
       }*/
-      /*when {
-        expression {
-          return gitTag;
-        }
-      }*/
+
       steps {
         echo "Installing on ${TESTENV}"
 
-        snInstallApp(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}", baseAppAutoUpgrade: false)
+        snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}", baseAppAutoUpgrade: false)
         //snRunTestSuite(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
