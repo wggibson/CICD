@@ -15,14 +15,13 @@ pipeline {
   }
   
   stages {
-    stage('Validated User Name') {
-      steps {
-        //echo "${CREDENTIALS}"
-        echo "My Credentials are ${CREDENTIALS}"
-      }
-    }
     
     stage('Build Preparation') {
+      when {
+        not {
+          branch 'master'
+        }
+      }
       steps {
         echo "${DEVENV}"
         echo "${BRANCH}"
@@ -44,7 +43,7 @@ pipeline {
       steps {
         echo "Installing on ${TESTENV}"
 
-        snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}", baseAppAutoUpgrade: false)
+        //snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}", baseAppAutoUpgrade: false)
         //snRunTestSuite(credentialsId: "${TEST_CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
         //snRunTestSuite apiVersion: '', browserName: '', browserVersion: '', credentialsId: '', osName: '', osVersion: '', testSuiteName: '', testSuiteSysId: '', url: '', withResults: false
       }
