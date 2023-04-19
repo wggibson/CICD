@@ -1,13 +1,13 @@
-def gitTag = null
+
 
 pipeline {
   agent any
   environment {
     APPSYSID = '73146993975b4110059ab4b3f153afae'
     BRANCH = "${BRANCH_NAME}"
-    CREDENTIALS = 'SN_CREDS'
-    DEV_CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
-    TEST_CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
+    CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
+    //DEV_CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
+    //TEST_CREDENTIALS = '7f324017-02b1-4d1e-b565-d7ef882356be'
     DEVENV = 'https://dev121898.service-now.com/'
     TESTENV = 'https://dev16887.service-now.com/'
     /* PRODENV = 'https://prodinstance.service-now.com/' **/
