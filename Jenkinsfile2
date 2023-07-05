@@ -1,0 +1,363 @@
+pipeline {
+    agent { node { label 'maa-nonprod'} }
+        
+    environment {
+        REPO_URL = "${env.GIT_URL}"
+        GIT_APP_CREDS = 'CloudBees-EPSB'
+        APPSYSID = '88b12f771bc1edd44d16ebdbac4bcb65'
+        WORK_SPACE = "${env.WORKSPACE}"
+        BRANCH = "${env.BRANCH_NAME}"
+        DEVENV = 'https://iceserviceportaldev.servicenowservices.com/'
+        TESTENV = 'https://iceserviceportaltest.servicenowservices.com/'
+        UATENV = 'https://iceserviceportaluat.servicenowservices.com/'
+        //PRODENV = 'https://iceserviceportal.servicenowservices.com/'
+        TESTSUITEID = '8f2e714e1b7e21d01c8fed7ae54bcbeb'   //Demo 3.0 ATF Suite
+        CREDENTIALS = 'SN_DEV_ENV_CREDS_ID'
+        APP_SCOPE = 'x_g_dh5_demo_app'
+        APP_VERSION = getproperties()   //readFile(file: 'version.properties')
+        STATIC_NOTIFICATION_LIST = "Eugene.D.Sikorski@associates.ice.dhs.gov,Valerie.M.Colbert@associates.ice.dhs.gov"
+        isStartedByCommit = checkCommit()
+    }    
+
+    stages {
+        stage('Pipeline Check'){
+            when {
+                expression {(env.isStartedByCommit=='false' && BRANCH.startsWith('feature')) || BRANCH.startsWith('minor') || BRANCH.startsWith('MINOR') || BRANCH.startsWith('MAJOR') || BRANCH.startsWith('major')}
+            }
+            
+            stages{
+                stage('Publish Changes to SN Repo') {
+                    steps {
+                        echo "[Publishing Changes] Branch Name: ${BRANCH}"
+                        script {
+                            def date = new Date()
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(date);
+                            def day = calendar.get(Calendar.DAY_OF_WEEK);
+                            def map=[
+                                1:"Sunday",
+                                2:"Monday",
+                                3:"Tuesday",
+                                4:"Wednesday",
+                                5:"Thursday",
+                                6:"Friday",
+                                7:"Saturday"]
+                            println day
+                            
+                            
+                            //def d = new Date(0) def tz = TimeZone.getTimeZone('GMT') println d.format('dd/MMM/yyyy', tz)
+                            
+                            /*if(BRANCH.startsWith('MINOR') || BRANCH.startsWith('minor') || BRANCH.startsWith('Minor')){
+                                def updatedMinorVersion = nextVersionFromGit('minor', "${APP_VERSION}")
+                                echo "Publishing MINOR version ${updatedMinorVersion} to SN Repo."
+                                
+                                // While still in the current WorkSpace, update version.properties file with the updated version number
+                                writeFile(file: 'version.properties', text: "version=${updatedMinorVersion}")
+
+                                def minorVer = getproperties()
+                                if(minorVer == updatedMinorVersion){
+                                    echo "READ FILE after writeFile --- Results are: ${minorVer}"
+                                    echo "[Apply Changes and Publish block] Branch Name: ${BRANCH}"
+                                    
+                                    addCommitPushFileToGit("${REPO_URL}", "${BRANCH}", 'version.properties', "${GIT_APP_CREDS}", "${minorVer}")
+                                }
+                                
+                                snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
+                                snPublishApp(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", appSysId: "${APPSYSID}", appVersion: "${minorVer}")
+                                
+                            }
+                            
+                            if(BRANCH.startsWith('MAJOR') || BRANCH.startsWith('major') || BRANCH.startsWith('Major')){
+                                def updatedMajorVersion = nextVersionFromGit('major', "${APP_VERSION}")
+                                echo "Publishing MAJOR version ${updatedMajorVersion} to SN Repo."
+                                
+                                // While still in the current WorkSpace, update version.properties file with the updated version number
+                                writeFile(file: 'version.properties', text: "version=${updatedMajorVersion}")
+                                
+                                def majorVer = getproperties()
+                                if(majorVer == updatedMajorVersion){
+                                    echo "READ FILE after writeFile --- Results are: ${majorVer}"
+                                    echo "[Apply Changes and Publish block] Branch Name: ${BRANCH}"
+                                    
+                                    addCommitPushFileToGit("${REPO_URL}", "${BRANCH}", 'version.properties', "${GIT_APP_CREDS}", "${majorVer}")
+                                }
+                                
+                                snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
+                                snPublishApp(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", appSysId: "${APPSYSID}", appVersion: "${majorVer}")
+                            }*/
+                            
+                            if(BRANCH.startsWith('FEATURE') || BRANCH.startsWith('feature')){
+                                //def updatedFeatureVersion = nextVersionFromGit('patch', "${APP_VERSION}")
+                                //new_app_version = nextVersionFromGit('patch', "${APP_VERSION}")
+                                echo "Current Published version is: ${APP_VERSION}"
+                                
+                                def aa = nextVersionFromGit('patch', "${APP_VERSION}")
+                                def bb = "${APP_VERSION}"
+                                echo "Incrementing AA  Published version ${aa} to SN Repo."
+                                // While still in the current WorkSpace, update version.properties file with the updated version number
+                                writeFile(file: 'version.properties', text: "version=${aa}")
+                                
+                                
+                                def versions = [aa,bb]
+                                def latest = maxVersion(versions)
+                                
+                                def isCommit = checkCommit()
+                                echo "!!!!!!!  Show me some commits: ${isCommit} !!!!!!!!!!"
+                                if(aa == latest){
+                                    echo "!!!!!!!  New App version is: ${latest} !!!!!!!!!!"
+                                    addCommitPushFileToGit("${REPO_URL}", "${BRANCH}", 'version.properties', "${GIT_APP_CREDS}", "${aa}")
+                                    pauseForVersionUpdate()
+
+                                }
+                                
+                                snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
+                                snPublishApp(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", appSysId: "${APPSYSID}", appVersion: "${latest}")
+                            }                    
+                        } //script
+                    }  //steps
+                } //Publish Changes to SN Repo stage
+            }
+        } //Pipeline Check stage
+        
+        stage('Deploy to Test') {
+            when {
+                expression {BRANCH.contains('PR-')}
+            }
+            
+            steps {
+                script{
+                    def testAppVersion = getproperties()
+                    echo "[Deploy to Test] Branch Name: ${BRANCH}"
+                    echo "Deploying App Version ${testAppVersion} to Test"
+                    snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
+                    snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
+                }
+
+
+                //snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
+                /*snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
+                snInstanceScan(
+                    url: "${TESTENV}",
+                    credentialsId: "${CREDENTIALS}",
+                    scanType: 'scanWithSuiteOnScopedApps',
+                    suiteSysId: '9a4cfa5a1b7aa5d04d16ebdbac4bcb88',
+                    requestBody: '{app_scope_sys_ids:["88b12f771bc1edd44d16ebdbac4bcb65"]}')*/
+            }  //steps
+        } //Deploy to Test stage
+        
+        
+        stage('Deploy to Prod') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo "[Deploy to Prod] Branch Name: ${BRANCH}"
+                script{
+                    def prodAppVersion = getproperties()
+                    echo "Deploying App Version ${prodAppVersion} to Production"
+                    
+                    def dtFormat4 = "yyyy-MM-dd"
+                    def dtFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+                    def now = new Date().format(dtFormat,TimeZone.getTimeZone('EST'))
+                    println now
+                    
+                    /*snDevOpsChange(changeRequestDetails: """ {
+                        "setCloseCode": false,
+                        "pollingInterval":"10",
+                        "abortOnChangeCreationFailure": true,
+                        "attributes": {
+                            "opened_by": {
+                                "name": "DevOps System"
+                                },
+                                "type": "normal",
+                                "category": "DevOps",
+                                "priority": "2",
+                                "state": "-5",
+                                "requested_by": "b08842451b874110a488ea82f54bcb53",
+                                "u_team_managed_deployment": "Yes",
+                                "u_application_release": "Yes",
+                                "u_application_name": "6c2944ce1bad0110976ca82eac4bcbc9",
+                                "u_release_number": ${prodAppVersion},
+                                "short_description": "This is a sample pipeline script to be added in your change step - created by Pipeline",
+                                "comments": "This is a sample pipeline script to be added in your change step - created by Pipeline",
+                                "work_notes": "Jenkins is Updating work_notes",
+                                "start_date": "2023-07-05 11:59:59",
+                                "end_date": "2023-07-08 11:59:59"
+                            }
+                    }""")*/
+                }
+                snInstallApp(credentialsId: "${CREDENTIALS}", url: "${UATENV}", appSysId: "${APPSYSID}")
+            }
+        } //Deploy to Prod stage
+    }
+    
+    post {
+        always {
+            echo 'I have finished'
+            //deleteDir() // clean up workspace
+        }
+        success {
+            echo 'I succeeded!'
+            script{
+                status = "SUCCESS"
+            }
+        }
+        unstable {
+            echo 'I am unstable :/'
+            script{
+                status = "UNSTABLE"
+            }
+        }
+        failure {
+            echo 'I failed :('
+            script{
+                status = "FAILURE"
+            }
+        }
+        changed {
+            echo 'Things are different...'
+        }
+        cleanup {
+            script {
+                echo "${env.GIT_BRANCH} branch has completed with a status of ${status}!"
+                emailext body: '''${SCRIPT, template="ice.tools-pipeline.template"}''',
+                    mimeType: 'text/html',
+                    to: "${env.STATIC_NOTIFICATION_LIST}",
+                    replyTo: "${env.STATIC_NOTIFICATION_LIST}",
+                    subject: "[Jenkins] (${status}) ${currentBuild.fullDisplayName}",
+                    recipientProviders: [[$class: 'RequesterRecipientProvider']]
+            }
+        }
+    }
+}
+
+@NonCPS
+def pauseForVersionUpdate() {
+    echo "Start"
+    sleep(5)
+    echo "Stop"
+}
+
+/**
+* used to determine if build kicked off from commit. e.g. prs, merges, commits pushes to a watched branch
+*/
+@NonCPS
+def checkCommit(){
+    echo "checkCommit()"
+    Boolean r = false
+    def buildCauses = currentBuild.rawBuild.getCauses()
+    echo "buildCauses:$buildCauses" // same as currentBuild.getBuildCauses()
+    for (buildCause in buildCauses) {
+        if ("${buildCause}".contains("jenkins.branch.BranchEventCause")) {
+            r = true
+        } 
+    }
+    echo "$r"
+    return r
+}
+
+@NonCPS
+static String maxVersion(List versions) {
+  versions.max { a, b ->
+    List verA = a.tokenize('.')
+    List verB = b.tokenize('.')
+    def commonIndices = Math.min(verA.size(), verB.size())
+    for (int i = 0; i < commonIndices; ++i) {
+      def numA = verA[i].toInteger()
+      def numB = verB[i].toInteger()
+      if (numA != numB) {
+        return numA <=> numB
+      }
+    }
+    verA.size() <=> verB.size()
+  }
+}
+
+/*****
+ * This function returns true if the last commit was made by Jenkins
+ *****/
+def wasLastCommitMadeByJenkins(){
+    def retValue = false
+    def lastCommitter = sh (script: "git --no-pager log -1 --pretty=%an", returnStdout:true).trim();
+    
+    echo "[INFO] --- lastCommitter -> [${lastCommitter}]"
+    
+    if (lastCommitter != null && lastCommitter.toString().contains('Jenkins')){
+        retValue = true
+        //unstable "[INFO] --- Last Commit was made by Jenkins"
+        echo "[INFO] --- Last Commit was made by Jenkins"
+    }
+    return retValue
+}
+
+
+/*****
+ * This function will add, commit and push a file to a Git Repo
+ *****/
+def addCommitPushFileToGit(gitUrl, branchName, fileName, ghCreds, version){
+    echo "New Version being updated:  ${version}"
+    echo "Branch Name is : ${branchName}"
+    echo "File Name:  ${fileName}"
+    echo "GIT_____URL:  ${gitUrl}"
+    //echo "Commit Message:  ${commitMessage}"
+    
+    try{
+                
+        withCredentials([usernamePassword(credentialsId: "${ghCreds}", 
+                         usernameVariable: 'GIT_USERNAME', 
+                         passwordVariable: 'GIT_TOKEN_V_PROP')]) {
+            // Build the Git URL with the PAT credentials
+            def gitUrlWithCreds = (env.GIT_URL - '.git').replace('https://', 'https://${GIT_USERNAME}:${GIT_TOKEN_V_PROP}@')
+            sh "git remote set-url origin ${gitUrlWithCreds}"
+        }
+        
+        //Fetch all branches
+        sh 'git fetch'
+        
+        // See what banches are available
+        sh 'git branch -a'
+        
+        // Checkout the branch name passed in
+        sh "git checkout ${branchName}"
+        
+        // List branches again to see if branchToCheckout has been selected
+        sh 'git branch -a'
+        sh "git add ${fileName}"
+        sh "git commit -m \"version=${version}\""
+        sh "git push origin ${branchName}"
+           
+    }catch(theError){
+        echo "Exception encountered committing file [${fileName}]: " + theError
+    }
+}
+
+def getproperties() {
+    script{
+        def props = readProperties  file:'./version.properties'
+        def myvalue = props['version']
+        return "${myvalue}"
+    }
+}
+
+
+def nextVersionFromGit(scope, latestVersion) {
+    echo "What scope is this : ${scope}"
+    def (major, minor, patch) = latestVersion.tokenize('.').collect { it.toInteger() }
+    def nextVersion
+    switch (scope) {
+        case 'major':
+            nextVersion = "${major + 1}.0.0"
+            break
+        case 'minor':
+            nextVersion = "${major}.${minor + 1}.0"
+            break
+        case 'patch':
+            nextVersion = "${major}.${minor}.${patch + 1}"
+            break
+    }
+    nextVersion
+}
+
+def showEnvironmentVariables() {
+    sh 'printenv'
+}
