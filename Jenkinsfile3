@@ -1,0 +1,366 @@
+pipeline {
+    agent { node { label 'maa-nonprod'} }
+    
+    environment {
+        REPO_URL = "${env.GIT_URL}"
+        GIT_APP_CREDS = 'CloudBees-EPSB'
+        APPSYSID = '82e1bbe71b4611504d16ebdbac4bcb40'
+        BRANCH = "${BRANCH_NAME}"
+        DEVENV = 'https://iceserviceportaldev.servicenowservices.com/'
+        TESTENV = 'https://iceserviceportaltest.servicenowservices.com/'
+        UATENV = 'https://iceserviceportaluat.servicenowservices.com/'
+        ////PRODENV = 'https://iceserviceportal.servicenowservices.com/'
+        TESTSUITEID = '8c213a4c1b2291d04d16ebdbac4bcb62'   //CI Demo ATF Suite
+        CREDENTIALS = 'SN_DEV_ENV_CREDS_ID'
+        APP_VERSION = getproperties()
+        STATIC_NOTIFICATION_LIST = "Eugene.D.Sikorski@associates.ice.dhs.gov"
+        VERSION = '12.8.0'
+        
+    }
+    
+    /*parameters{
+        snParam(name: 'snParam', value: {
+            name: 'appScope', value: 'x_g_dh5_new_cicd_d',
+            name: 'credentialsForInstalledApp', value: 'SN_DEV_ENV_CREDS_ID',
+            name: 'credentialsForPublishedApp', value: 'SN_DEV_ENV_CREDS_ID',
+            name: 'instanceForInstalledAppUrl', value: "${env.TESTENV}",
+            name: 'instanceForPublishedAppUrl', value: "${env.DEVENV}",
+            name: 'progressCheckInterval', value: 5000,
+            name: 'publishedAppVersion', value: "${VERSION}",
+            name: 'rollbackAppVersion', value: '',
+            name: 'sysId', value: '82e1bbe71b4611504d16ebdbac4bcb40'
+        })
+    }*/
+    
+    /*parameters {
+        snParam appScope: '', 
+        credentialsForInstalledApp: 'SN_DEV_ENV_CREDS_ID', 
+        credentialsForPublishedApp: 'SN_DEV_ENV_CREDS_ID', 
+        instanceForInstalledAppUrl: '', 
+        instanceForPublishedAppUrl: 'https://iceserviceportaldev.servicenowservices.com/', 
+        progressCheckInterval: 5000, 
+        publishedAppVersion: '12.8.0', 
+        rollbackAppVersion: '', 
+        sysId: '82e1bbe71b4611504d16ebdbac4bcb40'
+    }*/
+   
+    stages {
+        stage('Pipeline Check') {
+            when {
+                //expression {!wasLastCommitMadeByJenkins() && BRANCH.startsWith('feature')}
+                expression {BRANCH.startsWith('feature')}
+            }
+            
+            stages{
+                stage('Publish Changes to SN Repo') {
+                    steps {
+                        
+                        sh 'echo $BRANCH'
+                        sh 'echo $BUILD_NUMBER'
+                        sh 'echo $JOB_NAME'
+                        sh 'echo $JOB_URL'
+
+
+                        //snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
+                        //snPublishApp(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", appSysId: "${APPSYSID}", appVersion: "${latest}")
+                        //snPublishApp()
+                        //env.version = "${VERSION}"
+                        
+                        script {
+                            
+                            parameters {
+                                snParam appScope: '', 
+                                credentialsForInstalledApp: 'SN_DEV_ENV_CREDS_ID', 
+                                credentialsForPublishedApp: 'SN_DEV_ENV_CREDS_ID', 
+                                instanceForInstalledAppUrl: '', 
+                                instanceForPublishedAppUrl: 'https://iceserviceportaldev.servicenowservices.com/', 
+                                progressCheckInterval: 5000, 
+                                publishedAppVersion: '12.8.0', 
+                                rollbackAppVersion: '', 
+                                sysId: '82e1bbe71b4611504d16ebdbac4bcb40'
+                            }
+                            echo "${params.snParam}" 
+                            params.keySet().each {
+                                echo "The value of the ${it} parameter is: ${params[it]}"
+                                //build job: 'demoApp_FreeStyle', wait: false, parameters: [snParam(name: "${it}", value: "${params[it]}")]
+                            }
+
+                            
+                            def params=[]
+                            env.getEnvironment().each{ k, v ->
+                                echo "The value of the ${k} parameter is: ${v}"
+                                //params.add(string(name:"${k}", value:"${v}"))
+                            }
+                            //def slaveJob = build job: 'parameter_job', parameters:params
+                            
+                            //params.keySet().each {
+                            //    echo "The value of the ${it} parameter is: ${params[it]}"
+                            //}
+                            //build job: 'parameter_job', parameters: string(name: "${it}", value: "${params[it]}")
+                            ////def myparams = params.collect{
+                              //  string(name: "${it}", value: "${params[it]}")
+                            //}
+                       // }
+                            //echo "mparams parameter is: ${myparams}"
+                            //build job: 'parameter_job', parameters: myparams
+                            //sh "echo ${params.snParam}"
+                            //def values = "${params.snParam}".split(',')
+                            //sh "echo ${values}"
+                            //sh "echo ${params.snParam[2]}"
+                            //params.keySet().each {
+                            //    echo "The value of the ${it} parameter is: ${params[it]}"
+                            //}
+
+
+                           /* //if(BRANCH.startsWith('FEATURE') || BRANCH.startsWith('feature')){
+                                echo "Current Published version is: ${APP_VERSION}"
+                                
+                                def aa = nextVersionFromGit('patch', "${APP_VERSION}")
+                                def bb = "${APP_VERSION}"
+                                echo "Incrementing AA  Published version ${aa} to SN Repo."
+                                
+                                // While still in the current WorkSpace, update version.properties file with the updated version number
+                                writeFile(file: 'version.properties', text: "version=${aa}")                       
+                                
+                                def versions = [aa,bb]
+                                def latest = maxVersion(versions)
+                                echo "!!!!!!!  nextVersionFromGit aa: ${aa} !!!!!!!!!!"
+                                echo "!!!!!!!  App version is: ${bb} !!!!!!!!!!"
+                                
+                                if(aa == latest){
+                                    echo "!!!!!!!  LATEST New App version is: ${env.VERSION} !!!!!!!!!!"
+
+                                    env.VERSION = latest
+                                    echo "!!!!!!!  New App version is: ${env.VERSION} !!!!!!!!!!"
+                                    //addCommitPushFileToGit("${REPO_URL}", "${BRANCH}", 'version.properties', "${GIT_APP_CREDS}", "${env.VERSION}")
+                                    addCommitPushFileToGit("${REPO_URL}", "${BRANCH}", "${env.FILE_NAME}", "${GIT_APP_CREDS}", "${env.VERSION}")
+
+                                    //pauseForVersionUpdate()
+                                    snApplyChanges(appSysId: "${APPSYSID}", branchName: "${BRANCH}", url: "${DEVENV}", credentialsId: "${CREDENTIALS}")
+                                    //snPublishApp(credentialsId: "${CREDENTIALS}", url: "${DEVENV}", appSysId: "${APPSYSID}", appVersion: "${latest}")
+                                //}
+                            //}*/
+                        }  //script
+                        //snPublishApp()
+                    }  //steps
+                }  //Publish Changes to SN Repo stage
+                //stage('publishing') {
+                   // steps {
+                        //snPublishApp(obtainVersionAutomatically: true)
+                    //}
+                //}
+            }
+        } //Pipeline Check stage
+        
+        stage('Deploy to Test') {
+            when {
+                expression {BRANCH.contains('PR-')}
+            }
+            steps {
+                 script{
+                     def testAppVersion = getproperties()
+                     echo "[Deploy to Test] Branch Name: ${BRANCH}"
+                     echo "Deploying App Version ${testAppVersion} to Test"
+                     snInstallApp(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", appSysId: "${APPSYSID}")
+                     //snRunTestSuite(credentialsId: "${CREDENTIALS}", url: "${TESTENV}", testSuiteSysId: "${TESTSUITEID}", withResults: true)
+                 }
+            }  //steps
+        }   //Deploy to Test stage
+        
+        stage('Deploy to Prod') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo "[Deploy to Prod] Branch Name: ${BRANCH}"
+                script{
+                    def prodAppVersion = getproperties()
+                    echo "Deploying App Version ${prodAppVersion} to Production"
+                    
+                    /*snDevOpsChange(changeRequestDetails: """ {
+                        "setCloseCode": false,
+                        "pollingInterval":"10",
+                        "abortOnChangeCreationFailure": true,
+                        "attributes": {
+                            "opened_by": {
+                                "name": "DevOps System"
+                                },
+                                "type": "normal",
+                                "category": "DevOps",
+                                "priority": "2",
+                                "state": "-5",
+                                "requested_by": "b08842451b874110a488ea82f54bcb53",
+                                "u_team_managed_deployment": "Yes",
+                                "u_application_release": "Yes",
+                                "u_application_name": "6c2944ce1bad0110976ca82eac4bcbc9",
+                                "u_release_number": ${prodAppVersion},
+                                "short_description": "This is a sample pipeline script to be added in your change step - created by Pipeline",
+                                "comments": "This is a sample pipeline script to be added in your change step - created by Pipeline",
+                                "work_notes": "Jenkins is Updating work_notes",
+                                "start_date": "2023-07-05 11:59:59",
+                                "end_date": "2023-07-08 11:59:59"
+                            }
+                    }""")*/
+                }
+
+                snInstallApp(credentialsId: "${CREDENTIALS}", url: "${UATENV}", appSysId: "${APPSYSID}")
+            }
+        } //Deploy to Prod stage
+    }
+    
+    post {
+        always {
+            echo 'I have finished'
+            //deleteDir() // clean up workspace
+        }
+        success {
+            echo 'I succeeded!'
+            script{
+                status = "SUCCESS"
+            }
+        }
+        unstable {
+            echo 'I am unstable :/'
+            script{
+                status = "UNSTABLE"
+            }
+        }
+        failure {
+            echo 'I failed :('
+            script{
+                status = "FAILURE"
+            }
+        }
+        aborted {
+            echo 'Build aborted :('
+            script{
+                status = "ABORTED"
+            }
+        }
+        changed {
+            echo 'Things are different...'
+        }
+        cleanup {
+            script {
+                echo "${env.GIT_BRANCH} branch has completed with a status of ${status}!"
+                emailext body: '''${SCRIPT, template="ice.tools-pipeline.template"}''',
+                    mimeType: 'text/html',
+                    to: "${env.STATIC_NOTIFICATION_LIST}",
+                    replyTo: "${env.STATIC_NOTIFICATION_LIST}",
+                    subject: "[Jenkins] (${status}) ${currentBuild.fullDisplayName}",
+                    recipientProviders: [[$class: 'RequesterRecipientProvider']]
+            } //script
+        } //cleanup
+    }  //post
+}
+
+
+@NonCPS
+static String maxVersion(List versions) {
+  versions.max { a, b ->
+    List verA = a.tokenize('.')
+    List verB = b.tokenize('.')
+    def commonIndices = Math.min(verA.size(), verB.size())
+    for (int i = 0; i < commonIndices; ++i) {
+      def numA = verA[i].toInteger()
+      def numB = verB[i].toInteger()
+      if (numA != numB) {
+        return numA <=> numB
+      }
+    }
+    verA.size() <=> verB.size()
+  }
+}
+
+
+/*****
+ * This function returns true if the last commit was made by Jenkins
+ *****/
+def wasLastCommitMadeByJenkins(){
+    def retValue = false
+    def lastCommitter = sh (script: "git --no-pager log -1 --pretty=%an", returnStdout:true).trim();
+    //def lastCommitter = sh (script: "git --no-pager log -1 --pretty=%an version.properties", returnStdout:true).trim();
+    
+    echo "[INFO] --- lastCommitter -> [${lastCommitter}]"
+    
+    //if (lastCommitter != null && lastCommitter.toString().contains('Jenkins')){
+    if (lastCommitter.toString().contains('Jenkins')){
+        retValue = true
+        //unstable "[INFO] --- Last Commit was made by Jenkins"
+        echo "[INFO] --- Last Commit was made by ${lastCommitter}"
+    }
+    echo "[INFO] --- Last Commit was made by ${lastCommitter} --> ${retValue}"
+    return retValue
+}
+
+
+/*****
+ * This function will add, commit and push a file to a Git Repo
+ *****/
+def addCommitPushFileToGit(gitUrl, branchName, fileName, ghCreds, version){
+    echo "New Version being updated:  ${version}"
+    echo "Branch Name is : ${branchName}"
+    echo "File Name:  ${fileName}"
+    echo "GIT_____URL:  ${gitUrl}"
+    //echo "Commit Message:  ${commitMessage}"
+    
+    try{
+                
+        withCredentials([usernamePassword(credentialsId: "${ghCreds}", 
+                         usernameVariable: 'GIT_USERNAME', 
+                         passwordVariable: 'GIT_TOKEN_V_PROP')]) {
+            // Build the Git URL with the PAT credentials
+            def gitUrlWithCreds = (env.GIT_URL - '.git').replace('https://', 'https://${GIT_USERNAME}:${GIT_TOKEN_V_PROP}@')
+            sh "git remote set-url origin ${gitUrlWithCreds}"
+        }
+        
+        //Fetch all branches
+        sh 'git fetch'
+        
+        // See what banches are available
+        sh 'git branch -a'
+        
+        // Checkout the branch name passed in
+        sh "git checkout ${branchName}"
+        
+        // List branches again to see if branchToCheckout has been selected
+        sh 'git branch -a'
+        sh "git add ${fileName}"
+        sh "git commit -m \"version=${version}\""
+        sh "git push origin ${branchName}"
+           
+    }catch(theError){
+        echo "Exception encountered committing file [${fileName}]: " + theError
+    }
+}
+
+def getproperties() {
+    script{
+        def props = readProperties  file:'./version.properties'
+        def myvalue = props['version']
+        return "${myvalue}"
+    }
+}
+
+
+def nextVersionFromGit(scope, latestVersion) {
+    echo "What scope is this : ${scope}"
+    def (major, minor, patch) = latestVersion.tokenize('.').collect { it.toInteger() }
+    def nextVersion
+    switch (scope) {
+        case 'major':
+            nextVersion = "${major + 1}.0.0"
+            break
+        case 'minor':
+            nextVersion = "${major}.${minor + 1}.0"
+            break
+        case 'patch':
+            nextVersion = "${major}.${minor}.${patch + 1}"
+            break
+    }
+    nextVersion
+}
+
+def showEnvironmentVariables() {
+    sh 'printenv'
+}
